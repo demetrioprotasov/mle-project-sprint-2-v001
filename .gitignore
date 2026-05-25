@@ -172,3 +172,8 @@ cython_debug/
 
 # Another cache
 cache/
+
+# ===== MLflow =====
+# Локальная директория MLflow (артефакты и метаданные)
+mlruns/
+.mlflow/

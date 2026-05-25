@@ -30,7 +30,7 @@ cp .env.example .env
 # Отредактируйте .env с вашими credentials
 
 # 4. Запустите MLflow
-sh mlflow_server/run_mlflow_server.sh
+bash mlflow_server/run_mlflow_server.sh
 
 # 5. Откройте Jupyter Notebook
 jupyter notebook project_template_sprint_2.ipynb
@@ -41,64 +41,34 @@ jupyter notebook project_template_sprint_2.ipynb
 **Необходимые переменные в .env:**
 ```env
 # PostgreSQL для MLflow Backend Store
-DB_DESTINATION_HOST
-DB_DESTINATION_PORT
-DB_DESTINATION_NAME
-DB_DESTINATION_USER
-DB_DESTINATION_PASSWORD
+DB_DESTINATION_HOST=...
+DB_DESTINATION_PORT=...
+DB_DESTINATION_NAME=...
+DB_DESTINATION_USER=...
+DB_DESTINATION_PASSWORD=...
 
 # AWS S3 для артефактов
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-S3_BUCKET_NAME
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+S3_BUCKET_NAME=...
 
 # MLflow конфигурация
-MLFLOW_S3_ENDPOINT_URL
-MLFLOW_TRACKING_URI
+MLFLOW_S3_ENDPOINT_URL=...
+MLFLOW_TRACKING_URI=...
 ```
-
-## Этап 1: Разворачивание MLflow и регистрация модели
 
 ### Описание
-На этом этапе была произведена подготовка инфраструктуры MLflow для отслеживания экспериментов и регистрации моделей.
+На данном этапе производится настройка серверной части: поднимается MLflow Tracking Server в связке с реляционной базой данных (PostgreSQL) в качестве backend-store и объектным хранилищем (S3) в качестве artifact-store. Формируется базовая модель (baseline) на исходных данных. Производится логирование параметров, метрик перекрестной проверки, а также полная регистрация первой версии модели в MLflow Model Registry со всеми артефактами (сигнатурой, примерами входов и зависимостями среды).
+Исходный код для данного этапа располагается в директории mlflow_server.
 
-#### Запуск MLflow сервера (PostgreSQL + S3):
-```bash
-bash  mlflow_server/run_mlflow_server.sh
-```
+### Компоненты этапа:
+* **Скрипт запуска сервера**: `mlflow_server/run_mlflow_server.sh`
+* **Ноутбук базовой модели**: `mlflow_server/base_model.ipynb`
 
-### Конфигурация MLflow
+### Идентификация эксперимента в MLflow
+* **Название эксперимента (Experiment Name):** "sprint2_project"
+* **ID эксперимента (Experiment ID):** `6`
 
-**Tracking Server URL**: `http://http://localhost:5000`
-
-**Backend Store**: PostgreSQL база данных с метаданными экспериментов
-- `DB_HOST`: rc1b-uh7kdmcx67eomesf.mdb.yandexcloud.net
-- `DB_PORT`: 6432
-- `DB_NAME`: playground_mle_20260317_efc01cb482
-
-### Регистрация базовой модели
-
-**Experiment ID**: `[EXPERIMENT_ID]`
-**Experiment Name**: `baseline_model`
-
-В этом эксперименте была зарегистрирована исходная модель RandomForestRegressor с параметрами по умолчанию для использования как базовой версии.
-
-```python
-import mlflow
-import mlflow.sklearn
-
-mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("baseline_model")
-
-with mlflow.start_run(run_name="baseline_run"):
-    mlflow.log_param("n_estimators", 100)
-    mlflow.log_param("max_depth", None)
-    mlflow.log_metric("baseline_rmse", baseline_rmse)
-    mlflow.log_metric("baseline_r2", baseline_r2)
-    mlflow.sklearn.log_model(baseline_model, "model")
-```
-
----
 
 ### Этап 2: Проведение исследовательского анализа данных (EDA)
 

@@ -177,3 +177,10 @@ cache/
 # Локальная директория MLflow (артефакты и метаданные)
 mlruns/
 .mlflow/
+
+
+model_improvement/assets/
+model_improvement/catboost_info/
+model_improvement/fs_assets/
+model_improvement/optuna_plots/
+model_improvement/final_predictions.png
